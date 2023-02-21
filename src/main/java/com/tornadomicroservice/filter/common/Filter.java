@@ -3,7 +3,11 @@ package com.tornadomicroservice.filter.common;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
@@ -52,20 +56,24 @@ public class Filter {
 			Parameter[] declareds = method.getParameters();
 			Object[] varParams = new Object[method.getParameterCount()];
 			for (int i = 0; i < method.getParameterCount(); i++) {
-				switch (declareds[i].getType().toString()) {
+				switch (declareds[i].getType().getSimpleName()) {
 				case "short":
 					varParams[i] = Short.parseShort(params[i].toString());
 					break;
 				case "int":
+				case "Integer":
 					varParams[i] = Integer.parseInt(params[i].toString());
 					break;
 				case "long":
+				case "Long":
 					varParams[i] = Long.parseLong(params[i].toString());
 					break;
 				case "float":
+				case "Float":
 					varParams[i] = Float.parseFloat(params[i].toString());
 					break;
 				case "double":
+				case "Double":
 					varParams[i] = Double.parseDouble(params[i].toString());
 					break;
 				case "char":
@@ -87,6 +95,18 @@ public class Filter {
 		return null;
 	}
 
+	
+	public Object chainFilter(Object ...searchMethods) {
+		List<Object> result = new ArrayList<>();
+		for(int i = 0; i < searchMethods.length; i++) {
+			String searchMethod = searchMethods[i].toString().split("\\(")[0];
+			String params = searchMethods[i].toString().replaceAll(".*\\(|\\).*", "");
+				System.out.println("Method is: " + searchMethod);
+				System.out.println("Parameter is: " + params);
+				result.add(this.filter(searchMethod, params));
+		}
+		return result.stream().distinct().collect(Collectors.toList());
+	}
 	public void constraintValidation(Method method, Object... params)
 			throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException {
 		if (method.getParameterCount() == params.length || (method.getParameterCount() == 0)) {

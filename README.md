@@ -7,9 +7,13 @@
 ### First step
 
 Adding the dependency to the pom
+
 <dependency>
-		.....
-		.....
+         <groupId>com.tornadomicroservice.filter</groupId>
+         <artifactId>tornado-filter</artifactId>
+         <scope>system</scope>
+         <version>0.1.0</version>
+         <systemPath>Your\Path\To\The\Jar\TornadoFilter.jar</systemPath>
 </dependency>
 
 
